@@ -1,67 +1,55 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 
-interface MangaCardProps {
+interface Props {
   manga_id: string
   title: string
   cover: string
+  cover_portrait?: string
   status?: string
-  score?: number | null
-  type?: string | null
-  bookmark_count?: number
-  country?: string | null
-  chapter?: string | null
+  country?: string
+  score?: number
 }
 
-function getTypeBadge(country: string | null | undefined) {
-  if (!country) return null
-  if (country === 'KR') return { label: 'Manhwa', cls: 'badge-red' }
-  if (country === 'CN') return { label: 'Manhua', cls: 'badge-yellow' }
-  if (country === 'JP') return { label: 'Manga', cls: 'badge-gray' }
-  return null
+function countryBadge(country: string) {
+  const m: Record<string, string> = { KR: 'Manhwa', CN: 'Manhua', JP: 'Manga' }
+  return m[country?.toUpperCase()] || null
 }
 
-export default function MangaCard({ manga_id, title, cover, status, country, score, chapter }: MangaCardProps) {
-  const badge = getTypeBadge(country)
+export default function MangaCard({ manga_id, title, cover, cover_portrait, status, country, score }: Props) {
+  const [imgErr, setImgErr] = useState(false)
+  const src = cover_portrait || cover
+  const badge = country ? countryBadge(country) : null
 
   return (
-    <Link href={`/manga/${manga_id}`} className="manga-card" aria-label={`Baca ${title}`}>
+    <Link href={`/manga/${manga_id}`} className="manga-card">
       <div className="manga-card-cover">
-        {cover ? (
-          <img
-            src={cover}
-            alt={title}
-            loading="lazy"
-            onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.png' }}
-          />
+        {!imgErr && src ? (
+          <img src={src} alt={title} onError={() => setImgErr(true)} />
         ) : (
-          <div style={{ width: '100%', height: '100%', background: 'var(--bg-card-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '24px' }}>
-            📖
-          </div>
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-3)', color: 'var(--gray-2)', fontSize: 28 }}>📖</div>
         )}
         <div className="manga-card-overlay" />
-
-        {badge && (
-          <div className="manga-card-badge">
-            <span className={`badge ${badge.cls}`}>{badge.label}</span>
+        {badge && <div className="manga-card-badge"><span className="badge badge-red">{badge}</span></div>}
+        {score && (
+          <div style={{ position: 'absolute', bottom: 8, right: 8, fontSize: 11, fontWeight: 700, color: '#fbbf24', display: 'flex', alignItems: 'center', gap: 2 }}>
+            ★ {score.toFixed(1)}
           </div>
         )}
       </div>
-
       <div className="manga-card-info">
         <div className="manga-card-title">{title}</div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {score != null && (
-            <span className="manga-card-meta">⭐ {Number(score).toFixed(1)}</span>
-          )}
-          {status && (
-            <span className={`badge ${status === 'Ongoing' ? 'badge-green' : 'badge-gray'}`} style={{ fontSize: '10px', padding: '2px 7px' }}>
-              {status}
-            </span>
-          )}
+        <div className="manga-card-meta">
+          <span style={{
+            display: 'inline-flex', alignItems: 'center',
+            fontSize: 10, fontWeight: 600, letterSpacing: 0.3,
+            color: status === 'Completed' ? 'var(--gray-2)' : '#4ade80',
+          }}>
+            {status === 'Completed' ? '✓ Tamat' : '● Ongoing'}
+          </span>
         </div>
-        {chapter && <div className="manga-card-chapter">{chapter}</div>}
       </div>
     </Link>
   )

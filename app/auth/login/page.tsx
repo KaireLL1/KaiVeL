@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
@@ -14,19 +14,12 @@ export default function LoginPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setError('')
-    setLoading(true)
-
+    setError(''); setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-
-    if (error) {
-      setError('Email atau password salah.')
-    } else {
-      router.push('/')
-      router.refresh()
-    }
+    const { error: err } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
+    if (err) { setError('Email atau password salah.'); return }
+    router.push('/')
   }
 
   return (
@@ -34,7 +27,7 @@ export default function LoginPage() {
       <div className="auth-card fade-in">
         <div className="auth-logo">
           <div className="auth-logo-text">Kai<span>Vel</span></div>
-          <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 4 }}>Platform Baca Manga</div>
+          <div style={{ fontSize: 12, color: 'var(--gray-2)', marginTop: 4 }}>Platform Baca Manga</div>
         </div>
 
         <h1 className="auth-title">Masuk</h1>
@@ -44,48 +37,22 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email" className="form-label">Email</label>
-            <input
-              id="email"
-              type="email"
-              className="form-input"
-              placeholder="contoh@email.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
+            <label className="form-label" htmlFor="email">Email</label>
+            <input id="email" type="email" className="form-input" placeholder="kamu@email.com"
+              value={email} onChange={e => setEmail(e.target.value)} required />
           </div>
-
           <div className="form-group">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input
-              id="password"
-              type="password"
-              className="form-input"
-              placeholder="Password kamu"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-            />
+            <label className="form-label" htmlFor="password">Password</label>
+            <input id="password" type="password" className="form-input" placeholder="••••••••"
+              value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={loading}
-            style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: 15, marginTop: 8 }}
-          >
+          <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '11px', marginTop: 8 }} disabled={loading}>
             {loading ? 'Memproses...' : 'Masuk'}
           </button>
         </form>
 
         <div className="auth-divider">— atau —</div>
-
-        <div className="auth-link">
-          Belum punya akun? <Link href="/auth/register">Daftar sekarang</Link>
-        </div>
+        <p className="auth-link">Belum punya akun? <Link href="/auth/register">Daftar sekarang</Link></p>
       </div>
     </div>
   )
