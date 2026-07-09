@@ -199,7 +199,7 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ ma
             <h2 className="section-title">📋 Daftar Chapter</h2>
             <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{chaptersMapped.length} chapter</span>
           </div>
-          <ChapterList chapters={chaptersMapped} mangaId={mangaId} readHistory={readHistory} />
+          <ChapterList chapters={chaptersMapped} mangaId={mangaId} readChapters={readHistory} />
         </div>
       </div>
     </div>

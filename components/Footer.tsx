@@ -7,9 +7,9 @@ export default function Footer() {
           <p className="footer-text">
             © 2025 KaiVel · Data dari Shinigami ID · Unofficial, non-commercial
           </p>
-          <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--gray-2)' }}>
-            <a href="/explore" style={{ transition: 'color var(--dur)' }} onMouseEnter={e => (e.currentTarget.style.color = 'var(--white)')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--gray-2)')}>Explore</a>
-            <a href="/auth/register" style={{ transition: 'color var(--dur)' }} onMouseEnter={e => (e.currentTarget.style.color = 'var(--white)')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--gray-2)')}>Daftar</a>
+          <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
+            <a href="/explore" className="footer-text" style={{ transition: 'color var(--dur)' }}>Explore</a>
+            <a href="/auth/register" className="footer-text" style={{ transition: 'color var(--dur)' }}>Daftar</a>
           </div>
         </div>
       </div>

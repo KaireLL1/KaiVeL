@@ -73,7 +73,7 @@ function SearchContent() {
             ))}
           </div>
         ) : (
-          q && <MangaGrid items={results} emptyText={`Tidak ada hasil untuk "${q}"`} />
+          q && <MangaGrid items={results} />
         )}
       </div>
     </div>
