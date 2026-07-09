@@ -48,18 +48,6 @@ export default async function HomePage() {
                 Daftar Gratis
               </Link>
             </div>
-            <div className="hero-stats">
-              {[
-                { num: '10K+', label: 'Judul Manga' },
-                { num: '100K+', label: 'Pembaca Aktif' },
-                { num: 'Gratis', label: 'Selamanya' },
-              ].map(s => (
-                <div key={s.label}>
-                  <div className="hero-stat-num">{s.num}</div>
-                  <div className="hero-stat-label">{s.label}</div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
