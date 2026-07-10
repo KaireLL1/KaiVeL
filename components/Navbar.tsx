@@ -30,6 +30,7 @@ export default function Navbar() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
   const dropRef = useRef<HTMLDivElement>(null)
   const mobileDropRef = useRef<HTMLDivElement>(null)
   const searchRef = useRef<HTMLDivElement>(null)
@@ -92,7 +93,13 @@ export default function Navbar() {
     }
   }
 
-  async function handleLogout() {
+  function handleLogout() {
+    setDropOpen(false)
+    setShowLogoutModal(true)
+  }
+
+  async function confirmLogout() {
+    setShowLogoutModal(false)
     const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/')
@@ -245,6 +252,10 @@ export default function Navbar() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes modal-in {
+          from { opacity: 0; transform: scale(0.93) translateY(10px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
         @media (max-width: 768px) {
           .mobile-search-btn { display: flex !important; }
           .mobile-avatar-btn { display: flex !important; }
@@ -257,6 +268,84 @@ export default function Navbar() {
           .mobile-avatar-btn { display: none !important; }
         }
       `}</style>
+
+      {/* ── Logout Confirmation Modal ── */}
+      {showLogoutModal && (
+        <div
+          onClick={() => setShowLogoutModal(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(0,0,0,0.65)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '0 20px',
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: 'var(--bg-2)',
+              border: '1px solid var(--border)',
+              borderRadius: '18px',
+              padding: '32px 28px 28px',
+              maxWidth: 360, width: '100%',
+              boxShadow: '0 40px 100px rgba(0,0,0,0.8)',
+              animation: 'modal-in 0.2s cubic-bezier(0.34,1.56,0.64,1)',
+              textAlign: 'center',
+            }}
+          >
+            {/* Icon */}
+            <div style={{
+              width: 56, height: 56, borderRadius: '50%',
+              background: 'rgba(239,68,68,0.1)',
+              border: '1px solid rgba(239,68,68,0.2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              margin: '0 auto 20px',
+            }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+            </div>
+
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--white)', marginBottom: 10 }}>
+              Yakin ingin logout?
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--gray-2)', lineHeight: 1.7, marginBottom: 26 }}>
+              Kamu akan keluar dari akun dan perlu login kembali untuk mengakses fitur member.
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                style={{
+                  flex: 1, padding: '11px 0',
+                  borderRadius: 'var(--r-sm)',
+                  background: 'var(--bg-3)', border: '1px solid var(--border)',
+                  color: 'var(--white)', fontSize: 14, fontWeight: 600,
+                  cursor: 'pointer', fontFamily: 'inherit',
+                }}
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmLogout}
+                style={{
+                  flex: 1, padding: '11px 0',
+                  borderRadius: 'var(--r-sm)',
+                  background: '#ef4444', border: '1px solid #ef4444',
+                  color: '#fff', fontSize: 14, fontWeight: 700,
+                  cursor: 'pointer', fontFamily: 'inherit',
+                }}
+              >
+                Ya, Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
