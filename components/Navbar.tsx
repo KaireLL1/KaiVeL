@@ -63,6 +63,7 @@ export default function Navbar() {
       </div>
       {[
         { href: '/profile', label: 'Profil & Bookmark' },
+        { href: '/profile#history', label: 'Riwayat Baca' },
         { href: '/chat', label: 'Global Chat' },
       ].map(item => (
         <Link key={item.href} href={item.href}
@@ -176,6 +177,7 @@ export default function Navbar() {
             <>
               <div style={{ padding: '10px 14px', fontSize: 13, color: 'var(--gray-2)' }}>{user.email}</div>
               <Link href="/profile" style={{ padding: '13px 14px', fontSize: 15, color: 'var(--gray-1)', borderRadius: 'var(--r-sm)' }}>Profil & Bookmark</Link>
+              <Link href="/profile#history" style={{ padding: '13px 14px', fontSize: 15, color: 'var(--gray-1)', borderRadius: 'var(--r-sm)' }}>Riwayat Baca</Link>
               <button onClick={handleLogout} style={{ padding: '13px 14px', fontSize: 15, color: 'var(--red)', textAlign: 'left', borderRadius: 'var(--r-sm)' }}>Logout</button>
             </>
           ) : (

@@ -63,7 +63,7 @@ export default async function ProfilePage() {
         </div>
 
         {/* Reading History — Manga Cards */}
-        <div style={{ marginBottom: 48 }}>
+        <div id="history" style={{ marginBottom: 48, scrollMarginTop: 80 }}>
           <div className="section-header">
             <h2 className="section-title">Riwayat Baca</h2>
             {historyByManga.length > 0 && (
