@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPopular, getLatest, getMangaByCountry, getMangaByGenre } from '@/lib/api'
+import { getPopular, getLatest, getMangaByGenre, getMangaByFormat } from '@/lib/api'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
   const page  = parseInt(searchParams.get('page')  || '1')
   const limit = parseInt(searchParams.get('limit') || '30')
   const sort  = searchParams.get('sort') || 'popular'
-  const type  = searchParams.get('type') || ''
+  const type  = searchParams.get('type') || ''   // manhwa | manhua | manga
   const genre = searchParams.get('genre') || ''
 
   try {
@@ -14,8 +14,9 @@ export async function GET(req: NextRequest) {
     if (genre) {
       data = await getMangaByGenre(genre, page, limit)
     } else if (type) {
-      const map: Record<string,string> = { manhwa: 'KR', manhua: 'CN', manga: 'JP' }
-      data = await getMangaByCountry(map[type] || type.toUpperCase(), page, limit)
+      // Gunakan parameter 'format' — country_id tidak didukung API
+      // type value (manhwa/manhua/manga) = format slug yang valid
+      data = await getMangaByFormat(type, page, limit, sort)
     } else if (sort === 'latest') {
       data = await getLatest(page, limit)
     } else {

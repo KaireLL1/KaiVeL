@@ -43,6 +43,16 @@ export async function getMangaByCountry(countryId: string, page = 1, limit = 30)
   return shngmFetch('/v1/manga/list', { page, page_size: limit, country_id: countryId })
 }
 
+// Filter by format slug (manhwa/manhua/manga) — parameter yang benar dari API
+export async function getMangaByFormat(format: string, page = 1, limit = 30, sort = 'popular') {
+  return shngmFetch('/v1/manga/list', {
+    page,
+    page_size: limit,
+    format,
+    sort: sort === 'latest' ? 'latest' : 'popularity',
+  })
+}
+
 // ── Manga Detail ──────────────────────────────
 export async function getMangaDetail(mangaId: string) {
   return shngmFetch(`/v1/manga/detail/${mangaId}`)

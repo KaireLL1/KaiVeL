@@ -24,14 +24,14 @@ function mapManga(item: any) {
 
 const TYPES = [
   { label: 'Semua', value: '' },
-  { label: '🇰🇷 Manhwa', value: 'manhwa' },
-  { label: '🇨🇳 Manhua', value: 'manhua' },
-  { label: '🇯🇵 Manga', value: 'manga' },
+  { label: 'Manhwa', value: 'manhwa' },
+  { label: 'Manhua', value: 'manhua' },
+  { label: 'Manga', value: 'manga' },
 ]
 
 const SORTS = [
-  { label: '🔥 Populer', value: 'popular' },
-  { label: '🆕 Terbaru', value: 'latest' },
+  { label: 'Populer', value: 'popular' },
+  { label: 'Terbaru', value: 'latest' },
 ]
 
 function ExploreContent() {
