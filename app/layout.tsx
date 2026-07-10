@@ -3,6 +3,7 @@ import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BottomNav from '@/components/BottomNav'
+import WelcomeModal from '@/components/WelcomeModal'
 
 export const metadata: Metadata = {
   title: { default: 'KaiVel — Baca Manga & Manhwa', template: '%s | KaiVel' },
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>{children}</main>
         <Footer />
         <BottomNav />
+        <WelcomeModal />
       </body>
     </html>
   )
