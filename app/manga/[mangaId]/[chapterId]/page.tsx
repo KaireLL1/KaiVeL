@@ -16,7 +16,6 @@ export default function ReaderPage({ params }: { params: Promise<{ mangaId: stri
   const [error, setError] = useState('')
   const [chapters, setChapters] = useState<any[]>([])
   const [curIdx, setCurIdx] = useState(-1)
-  const [mangaTitle, setMangaTitle] = useState('')
   const [chapterName, setChapterName] = useState('')
 
   useEffect(() => {
@@ -39,7 +38,7 @@ export default function ReaderPage({ params }: { params: Promise<{ mangaId: stri
         const idx = chs.findIndex((c: any) => c.chapter_id === chapterId)
         setCurIdx(idx)
 
-        // Track reading history
+        // Track reading history (only if logged in)
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
@@ -66,7 +65,7 @@ export default function ReaderPage({ params }: { params: Promise<{ mangaId: stri
     <div className="reader-page">
       {/* Top Bar */}
       <div className="reader-topbar">
-        <Link href={`/manga/${mangaId}`} style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
+        <Link href={`/manga/${mangaId}`} style={{ color: 'var(--gray-1)', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
@@ -93,13 +92,17 @@ export default function ReaderPage({ params }: { params: Promise<{ mangaId: stri
 
       {/* Content */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '80px 20px', color: 'var(--text-muted)' }}>
-          <div style={{ fontSize: 36, marginBottom: 12 }}>⏳</div>
-          <div>Memuat halaman...</div>
+        <div style={{ textAlign: 'center', padding: '80px 20px', color: 'var(--gray-2)' }}>
+          <div style={{
+            width: 36, height: 36, border: '3px solid var(--border)', borderTopColor: 'var(--red)',
+            borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px'
+          }} />
+          <div style={{ fontSize: 14 }}>Memuat halaman...</div>
+          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
         </div>
       ) : error ? (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
-          <div style={{ color: 'var(--accent)', marginBottom: 16 }}>{error}</div>
+          <div style={{ color: 'var(--red)', marginBottom: 16, fontSize: 14 }}>{error}</div>
           <button className="btn btn-primary" onClick={() => window.location.reload()}>
             Coba Lagi
           </button>
@@ -131,15 +134,15 @@ export default function ReaderPage({ params }: { params: Promise<{ mangaId: stri
             </Link>
           ) : <div />}
           <Link href={`/manga/${mangaId}`} className="btn btn-ghost">
-            📋 Daftar Chapter
+            Daftar Chapter
           </Link>
           {nextChapter ? (
             <Link href={`/manga/${mangaId}/${nextChapter.chapter_id}`} className="btn btn-primary">
               Chapter Berikutnya →
             </Link>
           ) : (
-            <div style={{ padding: '10px 16px', fontSize: 13, color: 'var(--text-muted)' }}>
-              🎉 Ini chapter terbaru!
+            <div style={{ padding: '10px 16px', fontSize: 13, color: 'var(--gray-2)' }}>
+              Ini chapter terbaru!
             </div>
           )}
         </div>

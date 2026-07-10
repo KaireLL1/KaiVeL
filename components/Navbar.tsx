@@ -29,7 +29,6 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  // Close mobile menu on route change
   useEffect(() => { setMobileOpen(false) }, [pathname])
 
   function handleSearch(e: React.FormEvent) {
@@ -48,6 +47,7 @@ export default function Navbar() {
     { href: '/explore', label: 'Explore' },
     { href: '/explore?type=manhwa', label: 'Manhwa' },
     { href: '/explore?type=manhua', label: 'Manhua' },
+    { href: '/chat', label: 'Chat' },
   ]
 
   const dropMenu = (
@@ -62,7 +62,8 @@ export default function Navbar() {
         <div style={{ fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160 }}>{user?.email}</div>
       </div>
       {[
-        { href: '/profile', label: '👤 Profil & Bookmark' },
+        { href: '/profile', label: 'Profil & Bookmark' },
+        { href: '/chat', label: 'Global Chat' },
       ].map(item => (
         <Link key={item.href} href={item.href}
           style={{ display: 'block', padding: '10px 14px', fontSize: 13, transition: 'background var(--dur)' }}
@@ -78,7 +79,7 @@ export default function Navbar() {
       }}
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-3)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-      >🚪 Logout</button>
+      >Logout</button>
     </div>
   )
 
@@ -174,8 +175,8 @@ export default function Navbar() {
           {user ? (
             <>
               <div style={{ padding: '10px 14px', fontSize: 13, color: 'var(--gray-2)' }}>{user.email}</div>
-              <Link href="/profile" style={{ padding: '13px 14px', fontSize: 15, color: 'var(--gray-1)', borderRadius: 'var(--r-sm)' }}>👤 Profil & Bookmark</Link>
-              <button onClick={handleLogout} style={{ padding: '13px 14px', fontSize: 15, color: 'var(--red)', textAlign: 'left', borderRadius: 'var(--r-sm)' }}>🚪 Logout</button>
+              <Link href="/profile" style={{ padding: '13px 14px', fontSize: 15, color: 'var(--gray-1)', borderRadius: 'var(--r-sm)' }}>Profil & Bookmark</Link>
+              <button onClick={handleLogout} style={{ padding: '13px 14px', fontSize: 15, color: 'var(--red)', textAlign: 'left', borderRadius: 'var(--r-sm)' }}>Logout</button>
             </>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>

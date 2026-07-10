@@ -34,7 +34,7 @@ export default async function HomePage() {
       <section className="hero">
         <div className="container">
           <div style={{ maxWidth: 540 }}>
-            <div className="hero-label">🗡️ Platform Baca Manga</div>
+            <div className="hero-label">Platform Baca Manga</div>
             <h1 className="hero-title">Baca Manga<br />Tanpa Batas</h1>
             <p className="hero-desc">
               Nikmati ribuan judul manga, manhwa, dan manhua secara gratis.
@@ -42,7 +42,7 @@ export default async function HomePage() {
             </p>
             <div className="hero-actions">
               <Link href="/explore" className="btn btn-primary" style={{ padding: '11px 22px', fontSize: 14 }}>
-                Mulai Baca →
+                Mulai Baca
               </Link>
               <Link href="/auth/register" className="btn btn-ghost" style={{ padding: '11px 22px', fontSize: 14 }}>
                 Daftar Gratis
@@ -82,7 +82,7 @@ export default async function HomePage() {
             Daftar gratis dan bookmark manga favoritmu agar tidak ketinggalan update terbaru.
           </p>
           <Link href="/auth/register" className="btn btn-primary" style={{ padding: '12px 28px', fontSize: 14 }}>
-            Daftar Sekarang — Gratis 🚀
+            Daftar Sekarang — Gratis
           </Link>
         </div>
       </div>

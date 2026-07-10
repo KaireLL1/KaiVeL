@@ -90,10 +90,10 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ ma
     <div className="fade-in">
       <div className="container">
         {/* Breadcrumb */}
-        <nav style={{ padding: '16px 0', fontSize: 13, color: 'var(--text-muted)' }}>
-          <Link href="/" style={{ color: 'var(--accent)' }}>Home</Link>
+        <nav style={{ padding: '16px 0', fontSize: 13, color: 'var(--gray-2)' }}>
+          <Link href="/" style={{ color: 'var(--red)' }}>Home</Link>
           {' / '}
-          <Link href="/explore" style={{ color: 'var(--accent)' }}>Explore</Link>
+          <Link href="/explore" style={{ color: 'var(--red)' }}>Explore</Link>
           {' / '}
           <span>{d.title}</span>
         </nav>
@@ -123,8 +123,8 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ ma
             {/* Score */}
             {d.score && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--accent)' }}>⭐ {Number(d.score).toFixed(1)}</span>
-                <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>/ 10</span>
+                <span style={{ fontSize: 20, fontWeight: 800, color: '#fbbf24' }}>★ {Number(d.score).toFixed(1)}</span>
+                <span style={{ fontSize: 13, color: 'var(--gray-2)' }}>/ 10</span>
               </div>
             )}
 
@@ -148,12 +148,12 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ ma
             <div className="detail-actions" style={{ marginBottom: 24 }}>
               {firstChapter && (
                 <Link href={`/manga/${mangaId}/${firstChapter.chapter_id}`} className="btn btn-primary">
-                  📖 Baca Chapter 1
+                  Baca Chapter 1
                 </Link>
               )}
               {latestChapter && latestChapter.chapter_id !== firstChapter?.chapter_id && (
                 <Link href={`/manga/${mangaId}/${latestChapter.chapter_id}`} className="btn btn-ghost">
-                  ⚡ Chapter Terbaru
+                  Chapter Terbaru
                 </Link>
               )}
               <BookmarkButton mangaId={mangaId} title={d.title} cover={cover} />
@@ -196,9 +196,28 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ ma
         {/* Chapter List */}
         <div style={{ marginBottom: 60 }}>
           <div className="section-header">
-            <h2 className="section-title">📋 Daftar Chapter</h2>
-            <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{chaptersMapped.length} chapter</span>
+            <h2 className="section-title">Daftar Chapter</h2>
+            <span style={{ fontSize: 13, color: 'var(--gray-2)' }}>{chaptersMapped.length} chapter</span>
           </div>
+
+          {/* Login hint for non-authenticated users */}
+          {!user && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              background: 'rgba(230,57,70,0.06)', border: '1px solid var(--border-red)',
+              borderRadius: 'var(--r-sm)', padding: '10px 14px',
+              fontSize: 12, color: 'var(--gray-1)', marginBottom: 12
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--red)', flexShrink: 0 }}>
+                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 6v4m0 4h.01"/>
+              </svg>
+              <span>
+                <Link href="/auth/login" style={{ color: 'var(--red)', fontWeight: 600 }}>Login</Link>
+                {' '}untuk melacak progress bacaan kamu
+              </span>
+            </div>
+          )}
+
           <ChapterList chapters={chaptersMapped} mangaId={mangaId} readChapters={readHistory} />
         </div>
       </div>

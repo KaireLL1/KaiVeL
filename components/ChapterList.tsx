@@ -30,7 +30,6 @@ export default function ChapterList({ mangaId, chapters, readChapters = [] }: Pr
   if (!chapters.length) {
     return (
       <div className="empty" style={{ padding: '32px 0' }}>
-        <div className="empty-icon">📭</div>
         <div className="empty-text">Belum ada chapter</div>
       </div>
     )
@@ -61,7 +60,7 @@ export default function ChapterList({ mangaId, chapters, readChapters = [] }: Pr
 
       {chapters.length > LIMIT && (
         <button onClick={() => setShowAll(!showAll)} className="btn btn-ghost" style={{ width: '100%', justifyContent: 'center', marginTop: 10 }}>
-          {showAll ? '↑ Tampilkan lebih sedikit' : `↓ Tampilkan semua ${chapters.length} chapter`}
+          {showAll ? 'Tampilkan lebih sedikit' : `Tampilkan semua ${chapters.length} chapter`}
         </button>
       )}
     </div>

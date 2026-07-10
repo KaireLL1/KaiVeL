@@ -15,7 +15,7 @@ export default async function ProfilePage() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  // Fetch reading history (latest unique manga)
+  // Fetch reading history (latest per chapter)
   const { data: history } = await supabase
     .from('reading_history')
     .select('*')
@@ -35,16 +35,16 @@ export default async function ProfilePage() {
           <div>
             <div className="profile-name">{user.email?.split('@')[0]}</div>
             <div className="profile-email">{user.email}</div>
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>Bergabung sejak {joinDate}</div>
+            <div style={{ fontSize: 12, color: 'var(--gray-2)', marginTop: 4 }}>Bergabung sejak {joinDate}</div>
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 10 }}>
-            <div style={{ textAlign: 'center', padding: '12px 20px', background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--accent)' }}>{bookmarks?.length || 0}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Bookmark</div>
+            <div style={{ textAlign: 'center', padding: '12px 20px', background: 'var(--bg-1)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--red)' }}>{bookmarks?.length || 0}</div>
+              <div style={{ fontSize: 12, color: 'var(--gray-2)' }}>Bookmark</div>
             </div>
-            <div style={{ textAlign: 'center', padding: '12px 20px', background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--accent)' }}>{history?.length || 0}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Dibaca</div>
+            <div style={{ textAlign: 'center', padding: '12px 20px', background: 'var(--bg-1)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--red)' }}>{history?.length || 0}</div>
+              <div style={{ fontSize: 12, color: 'var(--gray-2)' }}>Dibaca</div>
             </div>
           </div>
         </div>
@@ -52,12 +52,14 @@ export default async function ProfilePage() {
         {/* Bookmarks */}
         <div style={{ marginBottom: 48 }}>
           <div className="section-header">
-            <h2 className="section-title">🔖 Bookmark Saya</h2>
+            <h2 className="section-title">Bookmark Saya</h2>
           </div>
 
           {!bookmarks || bookmarks.length === 0 ? (
             <div className="empty">
-              <div className="empty-icon">🔖</div>
+              <svg className="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+              </svg>
               <div className="empty-text">Belum ada bookmark</div>
               <div className="empty-sub">Mulai bookmark manga favoritmu!</div>
               <Link href="/explore" className="btn btn-primary" style={{ marginTop: 16 }}>Explore Manga</Link>
@@ -84,17 +86,21 @@ export default async function ProfilePage() {
           )}
         </div>
 
-        {/* History */}
+        {/* Reading History */}
         <div style={{ marginBottom: 60 }}>
           <div className="section-header">
-            <h2 className="section-title">📖 Riwayat Baca</h2>
+            <h2 className="section-title">Riwayat Baca</h2>
           </div>
 
           {!history || history.length === 0 ? (
             <div className="empty" style={{ padding: '40px 0' }}>
-              <div className="empty-icon">📖</div>
-              <div className="empty-text">Belum ada riwayat</div>
+              <svg className="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+              <div className="empty-text">Belum ada riwayat baca</div>
               <div className="empty-sub">Mulai baca manga sekarang!</div>
+              <Link href="/explore" className="btn btn-primary" style={{ marginTop: 16 }}>Explore Manga</Link>
             </div>
           ) : (
             <div className="chapter-list">
@@ -107,13 +113,13 @@ export default async function ProfilePage() {
                   <div>
                     <div className="chapter-name">{h.chapter_name || h.chapter_id}</div>
                     <div className="chapter-date">
-                      <Link href={`/manga/${h.manga_id}`} onClick={e => e.stopPropagation()} style={{ color: 'var(--accent)', marginRight: 8 }}>
+                      <Link href={`/manga/${h.manga_id}`} onClick={e => e.stopPropagation()} style={{ color: 'var(--red)', marginRight: 8 }}>
                         Lihat Manga
                       </Link>
                       {new Date(h.read_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--text-muted)' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--gray-3)' }}>
                     <path d="M9 18l6-6-6-6"/>
                   </svg>
                 </Link>
