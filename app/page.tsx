@@ -31,34 +31,42 @@ export default async function HomePage() {
   const latest  = (latestRes.data  || []).map(mapManga)
 
   return (
-    <div className="fade-in">
+    <div className="fade-in home-snap-container">
       {/* Hero Banner — auto-sliding */}
-      <HeroBanner />
+      <div className="home-snap-section">
+        <HeroBanner />
+      </div>
 
       {/* Rekomendasi */}
-      <RecommendationSection />
+      <div className="home-snap-section">
+        <RecommendationSection />
+      </div>
 
       {/* Popular */}
-      <section className="section">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Populer</h2>
-            <Link href="/explore?sort=popular" className="section-link">Lihat semua →</Link>
+      <div className="home-snap-section">
+        <section className="section">
+          <div className="container">
+            <div className="section-header">
+              <h2 className="section-title">Populer</h2>
+              <Link href="/explore?sort=popular" className="section-link">Lihat semua →</Link>
+            </div>
+            <MangaGrid items={popular} />
           </div>
-          <MangaGrid items={popular} />
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* Latest */}
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Update Terbaru</h2>
-            <Link href="/explore?sort=latest" className="section-link">Lihat semua →</Link>
+      <div className="home-snap-section">
+        <section className="section">
+          <div className="container">
+            <div className="section-header">
+              <h2 className="section-title">Update Terbaru</h2>
+              <Link href="/explore?sort=latest" className="section-link">Lihat semua →</Link>
+            </div>
+            <MangaGrid items={latest} />
           </div>
-          <MangaGrid items={latest} />
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect, use, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -17,6 +17,13 @@ export default function ReaderPage({ params }: { params: Promise<{ mangaId: stri
   const [chapters, setChapters] = useState<any[]>([])
   const [curIdx, setCurIdx] = useState(-1)
   const [chapterName, setChapterName] = useState('')
+  const [readProgress, setReadProgress] = useState(0)
+  const [showChapterList, setShowChapterList] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const [barVisible, setBarVisible] = useState(true)
+  const lastScrollY = useRef(0)
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const chapterListRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     async function load() {
@@ -38,11 +45,10 @@ export default function ReaderPage({ params }: { params: Promise<{ mangaId: stri
         const idx = chs.findIndex((c: any) => c.chapter_id === chapterId)
         setCurIdx(idx)
 
-        // Track reading history (only if logged in)
+        // Track reading history
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
-          // Ambil info manga (title & cover) untuk disimpan ke history
           let manga_title = ''
           let manga_cover = ''
           try {
@@ -72,8 +78,50 @@ export default function ReaderPage({ params }: { params: Promise<{ mangaId: stri
     load()
   }, [mangaId, chapterId])
 
+  // Scroll progress & bar hide/show
+  useEffect(() => {
+    function onScroll() {
+      const scrollTop = window.scrollY
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      const progress = docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0
+      setReadProgress(progress)
+
+      // Auto-hide bar on scroll down, show on scroll up
+      if (scrollTop > lastScrollY.current + 10) {
+        setBarVisible(false)
+      } else if (scrollTop < lastScrollY.current - 5) {
+        setBarVisible(true)
+      }
+      lastScrollY.current = scrollTop
+
+      // Auto show after idle
+      if (hideTimer.current) clearTimeout(hideTimer.current)
+      hideTimer.current = setTimeout(() => setBarVisible(true), 2000)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (hideTimer.current) clearTimeout(hideTimer.current)
+    }
+  }, [])
+
+  // Close popups on outside click
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (chapterListRef.current && !chapterListRef.current.contains(e.target as Node)) {
+        setShowChapterList(false)
+        setShowSettings(false)
+      }
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [])
+
   const prevChapter = curIdx >= 0 && curIdx < chapters.length - 1 ? chapters[curIdx + 1] : null
   const nextChapter = curIdx > 0 ? chapters[curIdx - 1] : null
+
+  const goToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+  const goToBottom = () => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
 
   return (
     <div className="reader-page">
@@ -122,7 +170,7 @@ export default function ReaderPage({ params }: { params: Promise<{ mangaId: stri
           </button>
         </div>
       ) : (
-        <div className="reader-images">
+        <div className="reader-images" style={{ paddingBottom: 120 }}>
           {pages.map((p) => (
             <div key={p.page} className="reader-image">
               <img
@@ -139,24 +187,117 @@ export default function ReaderPage({ params }: { params: Promise<{ mangaId: stri
         </div>
       )}
 
-      {/* Bottom Nav */}
+      {/* ── Floating Reader Bottom Bar (Shinigami-style) ── */}
       {!loading && !error && (
-        <div className="reader-nav">
-          {prevChapter ? (
-            <Link href={`/manga/${mangaId}/${prevChapter.chapter_id}`} className="btn btn-ghost">
-              ← Chapter Sebelumnya
-            </Link>
-          ) : <div />}
-          <Link href={`/manga/${mangaId}`} className="btn btn-ghost">
-            Daftar Chapter
-          </Link>
-          {nextChapter ? (
-            <Link href={`/manga/${mangaId}/${nextChapter.chapter_id}`} className="btn btn-primary">
-              Chapter Berikutnya →
-            </Link>
-          ) : (
-            <div style={{ padding: '10px 16px', fontSize: 13, color: 'var(--gray-2)' }}>
-              Ini chapter terbaru!
+        <div ref={chapterListRef} className={`reader-bottom-bar${barVisible ? ' visible' : ''}`}>
+          {/* Progress Bar */}
+          <div className="reader-progress-track">
+            <div className="reader-progress-fill" style={{ width: `${readProgress}%` }} />
+          </div>
+
+          <div className="reader-bar-inner">
+            {/* Prev Chapter */}
+            {prevChapter ? (
+              <Link
+                href={`/manga/${mangaId}/${prevChapter.chapter_id}`}
+                className="reader-bar-btn"
+                title="Chapter Sebelumnya"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </Link>
+            ) : (
+              <button className="reader-bar-btn" disabled title="Sudah chapter pertama">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" opacity="0.3">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+            )}
+
+            {/* Scroll to top */}
+            <button className="reader-bar-btn" onClick={goToTop} title="Ke atas">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <path d="M18 15l-6-6-6 6"/>
+              </svg>
+            </button>
+
+            {/* Chapter list toggle */}
+            <button
+              className={`reader-bar-btn reader-bar-btn--chapter${showChapterList ? ' active' : ''}`}
+              onClick={() => { setShowChapterList(p => !p); setShowSettings(false) }}
+              title="Daftar Chapter"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <line x1="8" y1="6" x2="21" y2="6"/>
+                <line x1="8" y1="12" x2="21" y2="12"/>
+                <line x1="8" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6" x2="3.01" y2="6"/>
+                <line x1="3" y1="12" x2="3.01" y2="12"/>
+                <line x1="3" y1="18" x2="3.01" y2="18"/>
+              </svg>
+            </button>
+
+            {/* Progress label */}
+            <div className="reader-bar-progress-label">
+              {Math.round(readProgress)}%
+            </div>
+
+            {/* Scroll to bottom */}
+            <button className="reader-bar-btn" onClick={goToBottom} title="Ke bawah">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+
+            {/* Next Chapter */}
+            {nextChapter ? (
+              <Link
+                href={`/manga/${mangaId}/${nextChapter.chapter_id}`}
+                className="reader-bar-btn reader-bar-btn--next"
+                title="Chapter Berikutnya"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </Link>
+            ) : (
+              <button className="reader-bar-btn" disabled title="Chapter terbaru">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" opacity="0.3">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </button>
+            )}
+          </div>
+
+          {/* Chapter List Popup */}
+          {showChapterList && (
+            <div className="reader-chapter-popup">
+              <div className="reader-chapter-popup-header">
+                <span>Daftar Chapter</span>
+                <button onClick={() => setShowChapterList(false)}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+              <div className="reader-chapter-popup-list">
+                {chapters.map((ch, i) => (
+                  <Link
+                    key={ch.chapter_id}
+                    href={`/manga/${mangaId}/${ch.chapter_id}`}
+                    className={`reader-chapter-popup-item${i === curIdx ? ' active' : ''}`}
+                    onClick={() => setShowChapterList(false)}
+                  >
+                    <span>{ch.name}</span>
+                    {i === curIdx && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                      </svg>
+                    )}
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
         </div>
