@@ -72,7 +72,7 @@ export default function RegisterPage() {
               <polyline points="20 6 9 17 4 12"/>
             </svg>
           </div>
-          <h2 style={{ fontFamily: 'Syne, sans-serif', fontSize: 20, fontWeight: 800, marginBottom: 10 }}>
+          <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 20, fontWeight: 700, marginBottom: 10 }}>
             Cek Email Kamu!
           </h2>
           <p style={{ fontSize: 13, color: 'var(--gray-1)', lineHeight: 1.6, marginBottom: 24 }}>

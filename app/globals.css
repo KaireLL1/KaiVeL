@@ -106,13 +106,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   display: flex; align-items: center; gap: 24px; height: 100%;
 }
 .navbar-logo {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 22px; font-weight: 800;
   letter-spacing: -0.5px;
   color: var(--white);
   flex-shrink: 0;
 }
-.navbar-logo span { color: var(--red); }
+/* Hapus mix warna — logo KaiVel full putih */
+.navbar-logo span { color: var(--white); }
 .navbar-links { display: flex; align-items: center; gap: 2px; flex: 1; }
 .navbar-link {
   padding: 6px 12px; border-radius: var(--r-sm);
@@ -183,7 +184,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   padding-top: 32px; border-top: 1px solid var(--border);
 }
 .hero-stat-num {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 26px; font-weight: 800; color: var(--white);
   line-height: 1;
 }
@@ -196,9 +197,10 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   margin-bottom: 20px;
 }
 .section-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 18px; font-weight: 800;
+  font-family: 'Inter', sans-serif;
+  font-size: 17px; font-weight: 700;
   display: flex; align-items: center; gap: 10px;
+  letter-spacing: -0.2px;
 }
 .section-title::before {
   content: ''; display: block; width: 3px; height: 18px;
@@ -257,7 +259,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
 }
 .detail-cover img { width: 100%; height: 100%; object-fit: cover; }
-.detail-title { font-family: 'Syne', sans-serif; font-size: clamp(20px, 3vw, 32px); font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
+.detail-title { font-family: 'Inter', sans-serif; font-size: clamp(20px, 3vw, 32px); font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
 .detail-alt { font-size: 13px; color: var(--gray-2); margin-bottom: 14px; }
 .detail-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 .detail-desc { font-size: 13px; color: var(--gray-1); line-height: 1.8; margin-bottom: 18px; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
@@ -308,9 +310,9 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-radius: var(--r-xl); padding: 36px 32px;
 }
 .auth-logo { text-align: center; margin-bottom: 28px; }
-.auth-logo-text { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; }
+.auth-logo-text { font-family: 'Inter', sans-serif; font-size: 28px; font-weight: 800; }
 .auth-logo-text span { color: var(--red); }
-.auth-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+.auth-title { font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 4px; }
 .auth-subtitle { font-size: 13px; color: var(--gray-1); margin-bottom: 24px; line-height: 1.5; }
 .form-group { margin-bottom: 14px; }
 .form-label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--gray-1); text-transform: uppercase; letter-spacing: 0.3px; }
@@ -432,14 +434,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 /* ── Profile ─────────────────────────────── */
 .profile-header { display: flex; align-items: center; gap: 18px; padding: 36px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
-.profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: #fff; flex-shrink: 0; }
-.profile-name { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; }
+.profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 800; color: #fff; flex-shrink: 0; }
+.profile-name { font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 800; }
 .profile-email { font-size: 13px; color: var(--gray-2); }
 
 /* ── Footer ──────────────────────────────── */
 .footer { border-top: 1px solid var(--border); padding: 24px 0; margin-top: 48px; }
 .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.footer-logo { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; }
+.footer-logo { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 800; }
 .footer-logo span { color: var(--red); }
 .footer-text { font-size: 12px; color: var(--gray-2); }
 
@@ -455,13 +457,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
   padding: 64px 0; text-align: center;
 }
-.cta-title { font-family: 'Syne', sans-serif; font-size: clamp(22px, 4vw, 36px); font-weight: 800; margin-bottom: 10px; }
+.cta-title { font-family: 'Inter', sans-serif; font-size: clamp(22px, 4vw, 36px); font-weight: 800; margin-bottom: 10px; }
 .cta-desc { font-size: 14px; color: var(--gray-1); max-width: 380px; margin: 0 auto 24px; line-height: 1.7; }
 
 /* ── Score chip ──────────────────────────── */
 .score-chip {
   display: inline-flex; align-items: center; gap: 4px;
-  font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--white);
+  font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 800; color: var(--white);
 }
 
 /* ── Fade-in ─────────────────────────────── */
@@ -475,7 +477,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   flex-shrink: 0;
 }
 .chat-header-inner { display: flex; align-items: center; justify-content: space-between; }
-.chat-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+.chat-title { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
 .chat-title::before { content: ''; display: block; width: 3px; height: 18px; background: var(--red); border-radius: 2px; flex-shrink: 0; }
 .chat-online { font-size: 11px; color: #4ade80; display: flex; align-items: center; gap: 5px; }
 .chat-online::before { content: ''; display: block; width: 7px; height: 7px; border-radius: 50%; background: #4ade80; animation: pulse-dot 2s infinite; }
@@ -502,7 +504,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
   background: var(--red); color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700; font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 700; font-family: 'Inter', sans-serif;
 }
 
 .chat-content { max-width: 70%; display: flex; flex-direction: column; gap: 3px; }
