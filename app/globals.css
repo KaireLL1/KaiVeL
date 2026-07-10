@@ -406,6 +406,97 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 /* Mobile avatar btn */
 .mobile-avatar-btn { display: none; position: relative; }
 
+/* ── Search Page (mobile-first) ──────────── */
+.search-page-form {
+  display: flex; gap: 10px; align-items: center; margin-bottom: 4px;
+}
+.search-page-input-wrap {
+  flex: 1; display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 0 14px;
+  height: 48px; transition: border-color var(--dur);
+}
+.search-page-input-wrap:focus-within { border-color: var(--border-red); }
+.search-page-input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--white); font-size: 15px; font-family: inherit; height: 100%;
+}
+.search-page-input::placeholder { color: var(--gray-2); }
+
+/* ── Live search list (as-you-type) ─────── */
+.search-live-list {
+  margin-top: 8px;
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: var(--r-md); overflow: hidden;
+  animation: fadeSlideDown 0.15s ease;
+}
+.search-live-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px;
+  transition: background var(--dur);
+  border-bottom: 1px solid var(--border);
+}
+.search-live-item:last-of-type { border-bottom: none; }
+.search-live-item:hover, .search-live-item:active { background: var(--bg-3); }
+.search-live-cover {
+  width: 40px; height: 58px;
+  border-radius: 6px; overflow: hidden;
+  flex-shrink: 0; background: var(--bg-3);
+}
+.search-live-cover img { width: 100%; height: 100%; object-fit: cover; }
+.search-live-info { flex: 1; min-width: 0; }
+.search-live-title {
+  font-size: 14px; font-weight: 600; color: var(--white);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  line-height: 1.3; margin-bottom: 4px;
+}
+.search-live-meta { display: flex; gap: 8px; align-items: center; }
+.search-live-viewall {
+  display: block; width: 100%; text-align: center;
+  padding: 11px 14px; font-size: 13px; color: var(--red);
+  font-weight: 500; border: none; background: rgba(139,92,246,0.06);
+  cursor: pointer; transition: background var(--dur); font-family: inherit;
+  border-top: 1px solid var(--border);
+}
+.search-live-viewall:hover { background: rgba(139,92,246,0.12); }
+
+/* ── Search Dropdown (navbar desktop) ────── */
+.navbar-search-wrap { position: relative; }
+.search-dropdown {
+  position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: var(--r-md); overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  z-index: 500; animation: fadeSlideDown 0.15s ease;
+}
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.search-dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; transition: background var(--dur); cursor: pointer;
+}
+.search-dropdown-item:hover { background: var(--bg-3); }
+.search-dropdown-cover {
+  width: 36px; height: 52px;
+  border-radius: 5px; overflow: hidden;
+  flex-shrink: 0; background: var(--bg-3);
+}
+.search-dropdown-cover img { width: 100%; height: 100%; object-fit: cover; }
+.search-dropdown-info { flex: 1; min-width: 0; }
+.search-dropdown-title {
+  font-size: 13px; font-weight: 600; color: var(--white);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.3;
+}
+.search-dropdown-status { font-size: 10px; color: var(--gray-2); margin-top: 3px; }
+.search-dropdown-viewall {
+  display: block; padding: 10px 12px; font-size: 12px; color: var(--red);
+  font-weight: 500; border-top: 1px solid var(--border);
+  transition: background var(--dur); text-align: center;
+}
+.search-dropdown-viewall:hover { background: var(--bg-3); }
+
 /* ── Manga Grid & Card ───────────────────── */
 .manga-grid {
   display: grid;
