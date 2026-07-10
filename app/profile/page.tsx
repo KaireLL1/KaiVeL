@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { getMangaDetail } from '@/lib/api'
 
 export default async function ProfilePage() {
   const supabase = await createClient()
@@ -29,7 +30,25 @@ export default async function ProfilePage() {
       mangaMap.set(h.manga_id, h)
     }
   }
-  const historyByManga = Array.from(mangaMap.values())
+  const historyGrouped = Array.from(mangaMap.values())
+
+  // Untuk item yang tidak punya cover (data lama), fetch dari API secara paralel
+  const historyByManga = await Promise.all(
+    historyGrouped.map(async (h) => {
+      if (h.manga_cover && h.manga_title) return h
+      try {
+        const detail = await getMangaDetail(h.manga_id)
+        const d = detail?.data
+        return {
+          ...h,
+          manga_title: h.manga_title || d?.title || '',
+          manga_cover: h.manga_cover || d?.cover_portrait_url || d?.cover_image_url || '',
+        }
+      } catch {
+        return h
+      }
+    })
+  )
 
   const avatar = user.email?.[0]?.toUpperCase() || 'U'
   const joinDate = new Date(user.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long' })
