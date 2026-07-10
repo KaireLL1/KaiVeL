@@ -20,7 +20,7 @@ export default async function ProfilePage() {
   const [bookmarksRes, historyRes, profileRes] = await Promise.all([
     supabase.from('bookmarks').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
     supabase.from('reading_history').select('*').eq('user_id', user.id).order('read_at', { ascending: false }),
-    supabase.from('profiles').select('*').eq('user_id', user.id).single(),
+    supabase.from('profiles').select('*').eq('user_id', user.id).maybeSingle(), // maybeSingle = null jika belum ada, tidak throw error
   ])
 
   const bookmarks = bookmarksRes.data || []
