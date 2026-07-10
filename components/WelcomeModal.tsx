@@ -111,7 +111,7 @@ export default function WelcomeModal() {
 
           {/* TikTok card */}
           <a
-            href="https://www.tiktok.com/@kaivel.id"
+            href="https://www.tiktok.com/@ka1rel"
             target="_blank"
             rel="noopener noreferrer"
             style={{
