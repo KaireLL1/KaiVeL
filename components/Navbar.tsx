@@ -2,8 +2,24 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+
+interface SearchResult {
+  manga_id: string
+  title: string
+  cover: string
+  status?: string
+}
+
+function useDebounce(value: string, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value)
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay)
+    return () => clearTimeout(timer)
+  }, [value, delay])
+  return debouncedValue
+}
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -11,8 +27,14 @@ export default function Navbar() {
   const [user, setUser] = useState<any>(null)
   const [query, setQuery] = useState('')
   const [dropOpen, setDropOpen] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const dropRef = useRef<HTMLDivElement>(null)
+  const searchRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const debouncedQuery = useDebounce(query, 320)
 
   useEffect(() => {
     const supabase = createClient()
@@ -21,19 +43,48 @@ export default function Navbar() {
     return () => sub.subscription.unsubscribe()
   }, [])
 
+  // Close dropdowns on outside click
   useEffect(() => {
     function handler(e: MouseEvent) {
       if (dropRef.current && !dropRef.current.contains(e.target as Node)) setDropOpen(false)
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setSearchOpen(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  useEffect(() => { setMobileOpen(false) }, [pathname])
+  useEffect(() => { setSearchOpen(false); setQuery('') }, [pathname])
+
+  // Live search
+  useEffect(() => {
+    if (debouncedQuery.length < 3) {
+      setSearchResults([])
+      setSearchOpen(false)
+      return
+    }
+    setSearchLoading(true)
+    fetch(`/api/manga/search?q=${encodeURIComponent(debouncedQuery)}&limit=6`)
+      .then(r => r.json())
+      .then(json => {
+        const items: SearchResult[] = (json.data || []).slice(0, 6).map((d: any) => ({
+          manga_id: d.manga_id,
+          title: d.title,
+          cover: d.cover_portrait_url || d.cover_image_url || '',
+          status: d.status === 1 ? 'Ongoing' : d.status === 2 ? 'Completed' : '',
+        }))
+        setSearchResults(items)
+        setSearchOpen(items.length > 0)
+      })
+      .catch(() => setSearchResults([]))
+      .finally(() => setSearchLoading(false))
+  }, [debouncedQuery])
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
-    if (query.trim()) { router.push(`/search?q=${encodeURIComponent(query.trim())}`); setMobileOpen(false) }
+    if (query.trim()) {
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`)
+      setSearchOpen(false)
+    }
   }
 
   async function handleLogout() {
@@ -97,13 +148,59 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Desktop search */}
-          <form className="navbar-search" onSubmit={handleSearch}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ color: 'var(--gray-2)', flexShrink: 0 }}>
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-            <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Cari manga..." aria-label="Cari manga" />
-          </form>
+          {/* Desktop search with live dropdown */}
+          <div ref={searchRef} style={{ position: 'relative', flex: 1, maxWidth: 280 }} className="navbar-search-wrap">
+            <form className="navbar-search" onSubmit={handleSearch}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ color: 'var(--gray-2)', flexShrink: 0 }}>
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input
+                ref={inputRef}
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                onFocus={() => searchResults.length > 0 && setSearchOpen(true)}
+                placeholder="Cari manga..."
+                aria-label="Cari manga"
+                autoComplete="off"
+              />
+              {searchLoading && (
+                <div style={{ width: 12, height: 12, border: '2px solid var(--gray-3)', borderTopColor: 'var(--red)', borderRadius: '50%', animation: 'spin 0.6s linear infinite', flexShrink: 0 }} />
+              )}
+            </form>
+
+            {/* Dropdown results */}
+            {searchOpen && searchResults.length > 0 && (
+              <div className="search-dropdown">
+                {searchResults.map(item => (
+                  <Link
+                    key={item.manga_id}
+                    href={`/manga/${item.manga_id}`}
+                    className="search-dropdown-item"
+                    onClick={() => { setSearchOpen(false); setQuery('') }}
+                  >
+                    <div className="search-dropdown-cover">
+                      {item.cover ? (
+                        <img src={item.cover} alt={item.title} />
+                      ) : (
+                        <div style={{ width: '100%', height: '100%', background: 'var(--bg-3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: 'var(--gray-3)' }}>?</div>
+                      )}
+                    </div>
+                    <div className="search-dropdown-info">
+                      <div className="search-dropdown-title">{item.title}</div>
+                      {item.status && <div className="search-dropdown-status">{item.status}</div>}
+                    </div>
+                  </Link>
+                ))}
+                <Link
+                  href={`/search?q=${encodeURIComponent(query)}`}
+                  className="search-dropdown-viewall"
+                  onClick={() => { setSearchOpen(false) }}
+                >
+                  Lihat semua hasil untuk &quot;{query}&quot; →
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* Desktop auth */}
           <div className="navbar-actions">
@@ -122,24 +219,37 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile: search icon only — navigasi ada di bottom nav */}
-          <Link
-            href="/search"
-            className="mobile-search-btn"
-            aria-label="Cari"
-          >
+          {/* Mobile: search icon → /search page */}
+          <Link href="/search" className="mobile-search-btn" aria-label="Cari">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
             </svg>
           </Link>
+
+          {/* Mobile: user avatar */}
+          {user && (
+            <div className="mobile-avatar-btn" ref={dropRef}>
+              <div className="user-avatar" onClick={() => setDropOpen(!dropOpen)} role="button" style={{ width: 28, height: 28, fontSize: 11 }}>
+                {user.email?.[0]?.toUpperCase()}
+              </div>
+              {dropOpen && dropMenu}
+            </div>
+          )}
         </div>
       </nav>
 
       <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 768px) {
           .mobile-search-btn { display: flex !important; }
+          .mobile-avatar-btn { display: flex !important; }
           .navbar-actions { display: none; }
           .navbar-links { display: none; }
+          .navbar-search-wrap { display: none !important; }
+        }
+        @media (min-width: 769px) {
+          .mobile-search-btn { display: none !important; }
+          .mobile-avatar-btn { display: none !important; }
         }
       `}</style>
     </>
