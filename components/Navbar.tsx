@@ -31,6 +31,7 @@ export default function Navbar() {
   const [searchLoading, setSearchLoading] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const dropRef = useRef<HTMLDivElement>(null)
+  const mobileDropRef = useRef<HTMLDivElement>(null)
   const searchRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -46,8 +47,12 @@ export default function Navbar() {
   // Close dropdowns on outside click
   useEffect(() => {
     function handler(e: MouseEvent) {
-      if (dropRef.current && !dropRef.current.contains(e.target as Node)) setDropOpen(false)
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setSearchOpen(false)
+      const t = e.target as Node
+      if (
+        dropRef.current && !dropRef.current.contains(t) &&
+        mobileDropRef.current && !mobileDropRef.current.contains(t)
+      ) setDropOpen(false)
+      if (searchRef.current && !searchRef.current.contains(t)) setSearchOpen(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
@@ -228,7 +233,7 @@ export default function Navbar() {
 
           {/* Mobile: user avatar */}
           {user && (
-            <div className="mobile-avatar-btn" ref={dropRef}>
+            <div className="mobile-avatar-btn" ref={mobileDropRef}>
               <div className="user-avatar" onClick={() => setDropOpen(!dropOpen)} role="button" style={{ width: 28, height: 28, fontSize: 11 }}>
                 {user.email?.[0]?.toUpperCase()}
               </div>
