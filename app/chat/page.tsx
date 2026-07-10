@@ -14,6 +14,11 @@ interface ChatMessage {
   updated_at: string
 }
 
+interface UserProfile {
+  avatar_url: string | null
+  username: string
+}
+
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime()
   const s = Math.floor(diff / 1000)
@@ -40,7 +45,9 @@ function dayLabel(dateStr: string) {
 export default function ChatPage() {
   const supabase = createClient()
   const [user, setUser] = useState<any>(null)
-  const [chatUsername, setChatUsername] = useState('')   // username dari tabel profiles
+  const [chatUsername, setChatUsername] = useState('')
+  const [myAvatarUrl, setMyAvatarUrl] = useState<string | null>(null)
+  const [userProfiles, setUserProfiles] = useState<Record<string, UserProfile>>({})
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
@@ -51,19 +58,19 @@ export default function ChatPage() {
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  // Auth + fetch username dari profiles
+  // Auth + fetch username & avatar dari profiles
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
       const u = data.user
       setUser(u)
       if (u) {
-        // Fetch custom username dari profiles table
         const { data: profile } = await supabase
           .from('profiles')
-          .select('username')
+          .select('username, avatar_url')
           .eq('user_id', u.id)
           .maybeSingle()
         setChatUsername(profile?.username || u.email?.split('@')[0] || 'User')
+        setMyAvatarUrl(profile?.avatar_url || null)
       }
     })
     const { data: sub } = supabase.auth.onAuthStateChange(async (_, session) => {
@@ -72,12 +79,14 @@ export default function ChatPage() {
       if (u) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('username')
+          .select('username, avatar_url')
           .eq('user_id', u.id)
           .maybeSingle()
         setChatUsername(profile?.username || u.email?.split('@')[0] || 'User')
+        setMyAvatarUrl(profile?.avatar_url || null)
       } else {
         setChatUsername('')
+        setMyAvatarUrl(null)
       }
     })
     return () => sub.subscription.unsubscribe()
@@ -90,7 +99,22 @@ export default function ChatPage() {
       .select('*')
       .order('created_at', { ascending: true })
       .limit(100)
-    if (!error && data) setMessages(data)
+    if (!error && data) {
+      setMessages(data)
+      // Fetch avatars for all unique users
+      const uniqueIds = [...new Set(data.map((m: ChatMessage) => m.user_id))]
+      if (uniqueIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id, username, avatar_url')
+          .in('user_id', uniqueIds)
+        if (profiles) {
+          const map: Record<string, UserProfile> = {}
+          profiles.forEach((p: any) => { map[p.user_id] = { avatar_url: p.avatar_url || null, username: p.username || '' } })
+          setUserProfiles(map)
+        }
+      }
+    }
   }, [])
 
   useEffect(() => {
@@ -235,8 +259,22 @@ export default function ChatPage() {
                     return (
                       <div key={msg.id} className={`chat-msg${isOwn ? ' chat-msg-own' : ''}`}>
                         {/* Avatar */}
-                        <div className="chat-avatar" style={{ background: avatarColor(msg.user_id) }}>
-                          {msg.username?.[0]?.toUpperCase() || '?'}
+                        <div
+                          className="chat-avatar"
+                          style={{
+                            background: avatarColor(msg.user_id),
+                            padding: 0, overflow: 'hidden', flexShrink: 0
+                          }}
+                        >
+                          {userProfiles[msg.user_id]?.avatar_url ? (
+                            <img
+                              src={userProfiles[msg.user_id].avatar_url!}
+                              alt={msg.username}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                            />
+                          ) : (
+                            msg.username?.[0]?.toUpperCase() || '?'
+                          )}
                         </div>
 
                         {/* Content */}
