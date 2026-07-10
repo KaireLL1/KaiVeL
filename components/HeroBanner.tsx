@@ -184,11 +184,6 @@ export default function HeroBanner() {
           </button>
         ))}
       </div>
-
-      {/* Progress bar */}
-      <div className="hero-banner-progress">
-        <div key={active} className="hero-banner-progress-bar" />
-      </div>
     </div>
   )
 }

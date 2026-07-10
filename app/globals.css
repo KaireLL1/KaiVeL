@@ -241,16 +241,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .hero-banner-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
 
 /* Progress bar (auto-play indicator) */
-.hero-banner-progress {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 2px; background: rgba(255,255,255,0.08); z-index: 10;
-}
-.hero-banner-progress-bar {
-  height: 100%;
-  background: linear-gradient(to right, var(--red), #22d3ee);
-  animation: banner-progress 5s linear forwards;
-}
-@keyframes banner-progress { from { width: 0%; } to { width: 100%; } }
 
 /* Dots */
 .hero-banner-dots {
