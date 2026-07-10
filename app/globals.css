@@ -708,7 +708,25 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .chat-content { max-width: 85%; }
   .chat-msg-actions { opacity: 1; }
 
+
   /* Profile stats responsive */
   .profile-header { flex-wrap: wrap; gap: 16px; }
   .profile-header > div:last-child { margin-left: 0 !important; width: 100%; justify-content: flex-start; }
+}
+
+/* ── History Grid Card Helpers ───────────── */
+.history-cover-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-3); color: var(--gray-3);
+}
+.history-chapter-badge {
+  position: absolute; bottom: 8px; left: 6px; right: 6px;
+  font-size: 10px; font-weight: 600; color: #fff;
+  background: rgba(0,0,0,0.75); border-radius: 4px;
+  padding: 2px 6px; text-align: center;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.history-loading-title {
+  color: var(--gray-3); font-style: italic; font-size: 11px;
 }
