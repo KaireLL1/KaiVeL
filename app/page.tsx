@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getPopular, getLatest } from '@/lib/api'
 import MangaGrid from '@/components/MangaGrid'
+import RecommendationSection from '@/components/RecommendationSection'
 
 function toStatus(code: number) {
   if (code === 1) return 'Ongoing'
@@ -51,6 +52,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Rekomendasi — horizontal scroll dengan tab filter */}
+      <RecommendationSection />
 
       {/* Popular */}
       <section className="section">
