@@ -748,16 +748,15 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .fade-in { animation: fadeUp 0.25s var(--ease); }
 
 /* ── Home Scroll Snap ────────────────────── */
-/* Snap pada level html agar tidak konflik dengan layout */
-html:has(.home-snap-container) {
-  scroll-snap-type: y proximity;
-}
-.home-snap-container {
-  /* Tidak perlu overflow sendiri — pakai scroll window biasa */
-}
-.home-snap-section {
-  scroll-snap-align: start;
-  scroll-snap-stop: normal;
+/* Hanya aktif di desktop — di HP konflik dengan horizontal scroll */
+@media (min-width: 769px) {
+  html:has(.home-snap-container) {
+    scroll-snap-type: y proximity;
+  }
+  .home-snap-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
 }
 
 /* ── Chat ────────────────────────────────── */
@@ -892,7 +891,8 @@ html:has(.home-snap-container) {
 .rekom-scroll {
   display: flex; gap: 10px; overflow-x: auto; overflow-y: hidden;
   padding-bottom: 10px; scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch; scrollbar-width: none; touch-action: pan-x;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  touch-action: pan-x pan-y;  /* izinkan scroll vertikal juga */
 }
 .rekom-scroll::-webkit-scrollbar { display: none; }
 .rekom-card {
