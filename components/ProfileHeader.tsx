@@ -10,11 +10,10 @@ interface Props {
   email: string
   avatarColor: string
   stats: { label: string; value: number }[]
-  onLogout: () => void
 }
 
 export default function ProfileHeader({
-  userId, initialUsername, initialBio, email, avatarColor, stats, onLogout
+  userId, initialUsername, initialBio, email, avatarColor, stats
 }: Props) {
   const [username, setUsername] = useState(initialUsername)
   const [bio, setBio] = useState(initialBio)
