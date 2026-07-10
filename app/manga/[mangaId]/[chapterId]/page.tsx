@@ -42,11 +42,25 @@ export default function ReaderPage({ params }: { params: Promise<{ mangaId: stri
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
+          // Ambil info manga (title & cover) untuk disimpan ke history
+          let manga_title = ''
+          let manga_cover = ''
+          try {
+            const mangaRes = await fetch(`/api/manga/${mangaId}`)
+            if (mangaRes.ok) {
+              const mangaJson = await mangaRes.json()
+              manga_title = mangaJson.title || mangaJson.data?.title || ''
+              manga_cover = mangaJson.cover || mangaJson.data?.cover_portrait_url || mangaJson.data?.cover_image_url || ''
+            }
+          } catch {}
+
           await supabase.from('reading_history').upsert({
             user_id: user.id,
             manga_id: mangaId,
             chapter_id: chapterId,
             chapter_name: chs[idx]?.name || '',
+            manga_title,
+            manga_cover,
             read_at: new Date().toISOString(),
           }, { onConflict: 'user_id,manga_id,chapter_id' })
         }
