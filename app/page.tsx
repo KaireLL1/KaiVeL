@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getPopular, getLatest } from '@/lib/api'
 import MangaGrid from '@/components/MangaGrid'
 import RecommendationSection from '@/components/RecommendationSection'
+import HeroBanner from '@/components/HeroBanner'
 
 function toStatus(code: number) {
   if (code === 1) return 'Ongoing'
@@ -31,29 +32,10 @@ export default async function HomePage() {
 
   return (
     <div className="fade-in">
-      {/* Hero */}
-      <section className="hero">
-        <div className="container">
-          <div style={{ maxWidth: 540 }}>
-            <div className="hero-label">Platform Baca Manga</div>
-            <h1 className="hero-title">Baca Manga<br />Tanpa Batas</h1>
-            <p className="hero-desc">
-              Nikmati ribuan judul manga, manhwa, dan manhua secara gratis.
-              Update cepat, kualitas terbaik, tanpa iklan mengganggu.
-            </p>
-            <div className="hero-actions">
-              <Link href="/explore" className="btn btn-primary" style={{ padding: '11px 22px', fontSize: 14 }}>
-                Mulai Baca
-              </Link>
-              <Link href="/auth/register" className="btn btn-ghost" style={{ padding: '11px 22px', fontSize: 14 }}>
-                Daftar Gratis
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Banner — auto-sliding */}
+      <HeroBanner />
 
-      {/* Rekomendasi — horizontal scroll dengan tab filter */}
+      {/* Rekomendasi */}
       <RecommendationSection />
 
       {/* Popular */}
@@ -77,7 +59,6 @@ export default async function HomePage() {
           <MangaGrid items={latest} />
         </div>
       </section>
-
     </div>
   )
 }
