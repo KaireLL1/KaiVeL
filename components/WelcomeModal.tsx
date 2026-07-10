@@ -62,47 +62,40 @@ export default function WelcomeModal() {
             </svg>
           </button>
 
-          {/* Beta badge */}
-          <div style={{ textAlign: 'center', marginBottom: 18 }}>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: 'rgba(139,92,246,0.15)',
-              border: '1px solid rgba(139,92,246,0.4)',
-              borderRadius: '999px', padding: '4px 14px',
-              fontSize: 11, fontWeight: 700, letterSpacing: 1.2,
-              color: '#c4b5fd', textTransform: 'uppercase',
-            }}>
-              ✦ BETA ACCESS
-            </span>
-          </div>
-
-          {/* Warning icon */}
+          {/* Logo icon */}
           <div style={{ textAlign: 'center', marginBottom: 16 }}>
             <div style={{
-              width: 64, height: 64, borderRadius: '50%',
-              background: 'rgba(139,92,246,0.12)',
-              border: '1px solid rgba(139,92,246,0.25)',
+              width: 72, height: 72, borderRadius: '20px',
+              background: 'linear-gradient(135deg, rgba(139,92,246,0.2), rgba(34,211,238,0.1))',
+              border: '1px solid rgba(139,92,246,0.3)',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 8px 32px rgba(139,92,246,0.25)',
             }}>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="1.8" strokeLinecap="round">
-                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#grad)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <defs>
+                  <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#8b5cf6"/>
+                    <stop offset="100%" stopColor="#22d3ee"/>
+                  </linearGradient>
+                </defs>
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
               </svg>
             </div>
           </div>
 
           {/* Title */}
           <div style={{ textAlign: 'center', marginBottom: 10 }}>
-            <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: '#fff', lineHeight: 1.3 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: '#fff', lineHeight: 1.3 }}>
               Selamat datang di{' '}
               <span style={{ background: 'linear-gradient(135deg, #8b5cf6, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 KaiVel
               </span>
             </h2>
           </div>
-          <p style={{ textAlign: 'center', fontSize: 13, color: '#94a3b8', lineHeight: 1.7, margin: '0 0 24px' }}>
-            Platform ini masih dalam tahap beta. Expect beberapa rough edges, update cepat, dan fitur baru yang terus landing.
+          <p style={{ textAlign: 'center', fontSize: 13.5, color: '#94a3b8', lineHeight: 1.75, margin: '0 0 24px' }}>
+            Satu tempat untuk semua manga, manhwa, dan manhua favoritmu.
+            Baca gratis, update cepat — kapan saja, di mana saja.
           </p>
         </div>
 
