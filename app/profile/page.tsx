@@ -2,87 +2,77 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getMangaDetail } from '@/lib/api'
+import ProfileHeader from '@/components/ProfileHeader'
+
+const AVATAR_COLORS = ['#e63946', '#6366f1', '#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6']
+function avatarColor(userId: string) {
+  let hash = 0
+  for (let i = 0; i < userId.length; i++) hash = userId.charCodeAt(i) + ((hash << 5) - hash)
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
+}
 
 export default async function ProfilePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
   if (!user) redirect('/auth/login')
 
-  // Fetch bookmarks
-  const { data: bookmarks } = await supabase
-    .from('bookmarks')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
+  // Fetch semua data paralel
+  const [bookmarksRes, historyRes, profileRes] = await Promise.all([
+    supabase.from('bookmarks').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+    supabase.from('reading_history').select('*').eq('user_id', user.id).order('read_at', { ascending: false }),
+    supabase.from('profiles').select('*').eq('user_id', user.id).single(),
+  ])
 
-  // Fetch reading history — ambil semua lalu group per manga di sisi client
-  const { data: historyRaw } = await supabase
-    .from('reading_history')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('read_at', { ascending: false })
+  const bookmarks = bookmarksRes.data || []
+  const historyRaw = historyRes.data || []
+  const profile = profileRes.data
 
-  // Group history by manga_id — ambil entry terbaru per manga
+  // Username: dari tabel profiles, fallback ke email prefix
+  const savedUsername = profile?.username || user.email?.split('@')[0] || 'User'
+  const savedBio = profile?.bio || ''
+
+  // Group history by manga (latest per manga)
   const mangaMap = new Map<string, any>()
-  for (const h of historyRaw || []) {
-    if (!mangaMap.has(h.manga_id)) {
-      mangaMap.set(h.manga_id, h)
-    }
+  for (const h of historyRaw) {
+    if (!mangaMap.has(h.manga_id)) mangaMap.set(h.manga_id, h)
   }
   const historyGrouped = Array.from(mangaMap.values())
 
-  // Untuk item yang tidak punya cover (data lama), fetch dari API secara paralel
+  // Fetch cover untuk item tanpa cover (paralel, max 5 sekaligus)
   const historyByManga = await Promise.all(
     historyGrouped.map(async (h) => {
       if (h.manga_cover && h.manga_title) return h
       try {
         const detail = await getMangaDetail(h.manga_id)
         const d = detail?.data
-        return {
-          ...h,
-          manga_title: h.manga_title || d?.title || '',
-          manga_cover: h.manga_cover || d?.cover_portrait_url || d?.cover_image_url || '',
-        }
-      } catch {
-        return h
-      }
+        return { ...h, manga_title: h.manga_title || d?.title || '', manga_cover: h.manga_cover || d?.cover_portrait_url || d?.cover_image_url || '' }
+      } catch { return h }
     })
   )
 
-  const avatar = user.email?.[0]?.toUpperCase() || 'U'
-  const joinDate = new Date(user.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long' })
-  const totalChaptersRead = historyRaw?.length || 0
+  const stats = [
+    { label: 'Dibaca', value: historyByManga.length },
+    { label: 'Bookmark', value: bookmarks.length },
+    { label: 'Chapter', value: historyRaw.length },
+  ]
 
   return (
-    <div className="fade-in">
-      <div className="container">
-        {/* Profile Header */}
-        <div className="profile-header">
-          <div className="profile-avatar">{avatar}</div>
-          <div>
-            <div className="profile-name">{user.email?.split('@')[0]}</div>
-            <div className="profile-email">{user.email}</div>
-            <div style={{ fontSize: 12, color: 'var(--gray-2)', marginTop: 4 }}>Bergabung sejak {joinDate}</div>
-          </div>
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 10 }}>
-            <div style={{ textAlign: 'center', padding: '12px 20px', background: 'var(--bg-1)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--red)' }}>{bookmarks?.length || 0}</div>
-              <div style={{ fontSize: 12, color: 'var(--gray-2)' }}>Bookmark</div>
-            </div>
-            <div style={{ textAlign: 'center', padding: '12px 20px', background: 'var(--bg-1)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--red)' }}>{historyByManga.length}</div>
-              <div style={{ fontSize: 12, color: 'var(--gray-2)' }}>Manga Dibaca</div>
-            </div>
-            <div style={{ textAlign: 'center', padding: '12px 20px', background: 'var(--bg-1)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--red)' }}>{totalChaptersRead}</div>
-              <div style={{ fontSize: 12, color: 'var(--gray-2)' }}>Chapter Dibaca</div>
-            </div>
-          </div>
-        </div>
+    <div className="fade-in" style={{ paddingBottom: 48 }}>
+      <div className="container" style={{ maxWidth: 680 }}>
 
-        {/* Reading History — Manga Cards */}
-        <div id="history" style={{ marginBottom: 48, scrollMarginTop: 80 }}>
+        {/* Profile Header — Client Component */}
+        <ProfileHeader
+          userId={user.id}
+          initialUsername={savedUsername}
+          initialBio={savedBio}
+          email={user.email || ''}
+          avatarColor={avatarColor(user.id)}
+          stats={stats}
+          onLogout={() => {}}
+        />
+
+        {/* Reading History */}
+        <div id="history" style={{ scrollMarginTop: 80, marginTop: 40 }}>
           <div className="section-header">
             <h2 className="section-title">Riwayat Baca</h2>
             {historyByManga.length > 0 && (
@@ -116,21 +106,12 @@ export default async function ProfilePage() {
                       </div>
                     )}
                     <div className="manga-card-overlay" />
-                    {/* Badge chapter terakhir */}
-                    <div style={{
-                      position: 'absolute', bottom: 8, left: 8, right: 8,
-                      fontSize: 10, fontWeight: 600, color: 'var(--white)',
-                      background: 'rgba(0,0,0,0.7)', borderRadius: 4,
-                      padding: '2px 6px', textAlign: 'center',
-                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-                    }}>
+                    <div style={{ position: 'absolute', bottom: 8, left: 8, right: 8, fontSize: 10, fontWeight: 600, color: 'var(--white)', background: 'rgba(0,0,0,0.7)', borderRadius: 4, padding: '2px 6px', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {h.chapter_name || 'Chapter ?'}
                     </div>
                   </div>
                   <div className="manga-card-info">
-                    <div className="manga-card-title">
-                      {h.manga_title || `Manga ${h.manga_id.slice(0, 8)}...`}
-                    </div>
+                    <div className="manga-card-title">{h.manga_title || `Manga ${h.manga_id.slice(0, 8)}...`}</div>
                     <div className="manga-card-meta" style={{ fontSize: 10, color: 'var(--gray-2)' }}>
                       {new Date(h.read_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </div>
@@ -142,15 +123,15 @@ export default async function ProfilePage() {
         </div>
 
         {/* Bookmarks */}
-        <div style={{ marginBottom: 60 }}>
+        <div style={{ marginTop: 40 }}>
           <div className="section-header">
-            <h2 className="section-title">Bookmark Saya</h2>
-            {bookmarks && bookmarks.length > 0 && (
+            <h2 className="section-title">Bookmark</h2>
+            {bookmarks.length > 0 && (
               <span style={{ fontSize: 12, color: 'var(--gray-2)' }}>{bookmarks.length} manga</span>
             )}
           </div>
 
-          {!bookmarks || bookmarks.length === 0 ? (
+          {bookmarks.length === 0 ? (
             <div className="empty">
               <svg className="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
@@ -186,6 +167,7 @@ export default async function ProfilePage() {
             </div>
           )}
         </div>
+
       </div>
     </div>
   )
