@@ -78,18 +78,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <div className="cta-section">
-        <div className="container">
-          <h2 className="cta-title">Simpan Manga Favoritmu</h2>
-          <p className="cta-desc">
-            Daftar gratis dan bookmark manga favoritmu agar tidak ketinggalan update terbaru.
-          </p>
-          <Link href="/auth/register" className="btn btn-primary" style={{ padding: '12px 28px', fontSize: 14 }}>
-            Daftar Sekarang — Gratis
-          </Link>
-        </div>
-      </div>
     </div>
   )
 }
