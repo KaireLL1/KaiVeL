@@ -40,6 +40,7 @@ function dayLabel(dateStr: string) {
 export default function ChatPage() {
   const supabase = createClient()
   const [user, setUser] = useState<any>(null)
+  const [chatUsername, setChatUsername] = useState('')   // username dari tabel profiles
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
@@ -50,10 +51,35 @@ export default function ChatPage() {
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  // Auth
+  // Auth + fetch username dari profiles
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user))
-    const { data: sub } = supabase.auth.onAuthStateChange((_, session) => setUser(session?.user ?? null))
+    supabase.auth.getUser().then(async ({ data }) => {
+      const u = data.user
+      setUser(u)
+      if (u) {
+        // Fetch custom username dari profiles table
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('user_id', u.id)
+          .maybeSingle()
+        setChatUsername(profile?.username || u.email?.split('@')[0] || 'User')
+      }
+    })
+    const { data: sub } = supabase.auth.onAuthStateChange(async (_, session) => {
+      const u = session?.user ?? null
+      setUser(u)
+      if (u) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('user_id', u.id)
+          .maybeSingle()
+        setChatUsername(profile?.username || u.email?.split('@')[0] || 'User')
+      } else {
+        setChatUsername('')
+      }
+    })
     return () => sub.subscription.unsubscribe()
   }, [])
 
@@ -115,7 +141,7 @@ export default function ChatPage() {
     setSending(true)
     await supabase.from('global_chat').insert({
       user_id: user.id,
-      username: user.email?.split('@')[0] || 'User',
+      username: chatUsername || user.email?.split('@')[0] || 'User',
       message: text,
     })
     setSending(false)
