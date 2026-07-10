@@ -625,6 +625,53 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   box-shadow: 0 0 0 4px rgba(255,255,255,0.06), 0 0 24px rgba(0,0,0,0.4);
   flex-shrink: 0;
 }
+
+/* Avatar upload wrapper */
+.profile-avatar-wrap {
+  position: relative;
+  width: 86px; height: 86px;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.06), 0 0 24px rgba(0,0,0,0.4);
+  transition: box-shadow 0.2s ease;
+}
+.profile-avatar-wrap:hover {
+  box-shadow: 0 0 0 3px var(--red), 0 0 24px rgba(139,92,246,0.3);
+}
+.profile-avatar-img {
+  width: 86px; height: 86px;
+  border-radius: 50%; object-fit: cover;
+  display: block;
+}
+/* Camera overlay */
+.profile-avatar-overlay {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,0);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s ease;
+}
+.profile-avatar-wrap:hover .profile-avatar-overlay {
+  background: rgba(0,0,0,0.55);
+}
+.profile-avatar-overlay svg,
+.profile-avatar-overlay .profile-avatar-spinner {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.profile-avatar-wrap:hover .profile-avatar-overlay svg,
+.profile-avatar-wrap:hover .profile-avatar-overlay .profile-avatar-spinner {
+  opacity: 1;
+}
+.profile-avatar-spinner {
+  width: 22px; height: 22px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
 .profile-new-name-row {
   display: flex; align-items: center; gap: 8px; margin-bottom: 2px;
 }

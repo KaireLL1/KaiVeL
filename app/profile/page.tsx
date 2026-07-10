@@ -29,6 +29,7 @@ export default async function ProfilePage() {
 
   const savedUsername = profile?.username || user.email?.split('@')[0] || 'User'
   const savedBio = profile?.bio || ''
+  const savedAvatarUrl = profile?.avatar_url || null
 
   // Group history by manga_id — ambil entry terbaru per manga
   const mangaMap = new Map<string, any>()
@@ -53,6 +54,7 @@ export default async function ProfilePage() {
           initialBio={savedBio}
           email={user.email || ''}
           avatarColor={getAvatarColor(user.id)}
+          avatarUrl={savedAvatarUrl}
           stats={stats}
         />
 

@@ -25,6 +25,7 @@ export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [query, setQuery] = useState('')
   const [dropOpen, setDropOpen] = useState(false)
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
@@ -40,8 +41,22 @@ export default function Navbar() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => setUser(data.user))
-    const { data: sub } = supabase.auth.onAuthStateChange((_, session) => setUser(session?.user ?? null))
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user)
+      if (data.user) {
+        supabase.from('profiles').select('avatar_url').eq('user_id', data.user.id).maybeSingle()
+          .then(({ data: p }) => setAvatarUrl(p?.avatar_url || null))
+      }
+    })
+    const { data: sub } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null)
+      if (session?.user) {
+        supabase.from('profiles').select('avatar_url').eq('user_id', session.user.id).maybeSingle()
+          .then(({ data: p }) => setAvatarUrl(p?.avatar_url || null))
+      } else {
+        setAvatarUrl(null)
+      }
+    })
     return () => sub.subscription.unsubscribe()
   }, [])
 
@@ -218,8 +233,12 @@ export default function Navbar() {
           <div className="navbar-actions">
             {user ? (
               <div style={{ position: 'relative' }} ref={dropRef}>
-                <div className="user-avatar" onClick={() => setDropOpen(!dropOpen)} role="button">
-                  {user.email?.[0]?.toUpperCase()}
+                <div className="user-avatar" onClick={() => setDropOpen(!dropOpen)} role="button" style={{ padding: 0, overflow: 'hidden' }}>
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                  ) : (
+                    user.email?.[0]?.toUpperCase()
+                  )}
                 </div>
                 {dropOpen && dropMenu}
               </div>
@@ -241,8 +260,12 @@ export default function Navbar() {
           {/* Mobile: user avatar */}
           {user && (
             <div className="mobile-avatar-btn" ref={mobileDropRef}>
-              <div className="user-avatar" onClick={() => setDropOpen(!dropOpen)} role="button" style={{ width: 28, height: 28, fontSize: 11 }}>
-                {user.email?.[0]?.toUpperCase()}
+              <div className="user-avatar" onClick={() => setDropOpen(!dropOpen)} role="button" style={{ width: 28, height: 28, fontSize: 11, padding: 0, overflow: 'hidden' }}>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                ) : (
+                  user.email?.[0]?.toUpperCase()
+                )}
               </div>
               {dropOpen && dropMenu}
             </div>
