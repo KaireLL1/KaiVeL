@@ -122,77 +122,24 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile hamburger */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            style={{ marginLeft: 'auto', display: 'none', padding: 6, color: 'var(--gray-1)' }}
-            className="mobile-menu-btn"
-            aria-label="Menu"
+          {/* Mobile: search icon only — navigasi ada di bottom nav */}
+          <Link
+            href="/search"
+            className="mobile-search-btn"
+            aria-label="Cari"
           >
-            {mobileOpen ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 6 6 18M6 6l12 12"/>
-              </svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M4 6h16M4 12h16M4 18h16"/>
-              </svg>
-            )}
-          </button>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+          </Link>
         </div>
       </nav>
 
-      {/* Mobile drawer */}
-      {mobileOpen && (
-        <div style={{
-          position: 'fixed', top: 'var(--nav-h)', left: 0, right: 0, bottom: 0,
-          background: 'var(--bg)', zIndex: 150,
-          display: 'flex', flexDirection: 'column', padding: '20px',
-          gap: 4, overflowY: 'auto'
-        }}>
-          {/* Mobile search */}
-          <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--bg-1)', border: '1px solid var(--border)', borderRadius: 'var(--r-sm)', padding: '0 14px', marginBottom: 8 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--gray-2)', flexShrink: 0 }}>
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-            <input
-              value={query} onChange={e => setQuery(e.target.value)}
-              placeholder="Cari manga..."
-              style={{ background: 'none', border: 'none', outline: 'none', color: 'var(--white)', fontSize: 14, padding: '12px 0', width: '100%' }}
-            />
-          </form>
-
-          {links.map(l => (
-            <Link key={l.href} href={l.href} style={{
-              padding: '13px 14px', fontSize: 15, fontWeight: 500,
-              color: pathname === l.href ? 'var(--red)' : 'var(--gray-1)',
-              background: pathname === l.href ? 'var(--red-dim)' : 'transparent',
-              borderRadius: 'var(--r-sm)', transition: 'all var(--dur)'
-            }}>{l.label}</Link>
-          ))}
-
-          <div style={{ height: 1, background: 'var(--border)', margin: '10px 0' }} />
-
-          {user ? (
-            <>
-              <div style={{ padding: '10px 14px', fontSize: 13, color: 'var(--gray-2)' }}>{user.email}</div>
-              <Link href="/profile" style={{ padding: '13px 14px', fontSize: 15, color: 'var(--gray-1)', borderRadius: 'var(--r-sm)' }}>Profil & Bookmark</Link>
-              <Link href="/profile#history" style={{ padding: '13px 14px', fontSize: 15, color: 'var(--gray-1)', borderRadius: 'var(--r-sm)' }}>Riwayat Baca</Link>
-              <button onClick={handleLogout} style={{ padding: '13px 14px', fontSize: 15, color: 'var(--red)', textAlign: 'left', borderRadius: 'var(--r-sm)' }}>Logout</button>
-            </>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
-              <Link href="/auth/login" className="btn btn-ghost" style={{ justifyContent: 'center', padding: '12px' }}>Masuk</Link>
-              <Link href="/auth/register" className="btn btn-primary" style={{ justifyContent: 'center', padding: '12px' }}>Daftar Gratis</Link>
-            </div>
-          )}
-        </div>
-      )}
-
       <style>{`
         @media (max-width: 768px) {
-          .mobile-menu-btn { display: flex !important; }
+          .mobile-search-btn { display: flex !important; }
           .navbar-actions { display: none; }
+          .navbar-links { display: none; }
         }
       `}</style>
     </>
